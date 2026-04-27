@@ -1,0 +1,19 @@
+url-shortener/
+│
+├── app.py
+├── db.py
+├── requirements.txt
+├── README.md
+│
+├── templates/
+│   └── index.html
+│
+├── static/
+│   ├── style.css
+│   └── script.js
+│
+├── database/
+│   └── schema.sql
+│
+└── screenshots/
+    └── demo.png
