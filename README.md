@@ -162,5 +162,4 @@ http://localhost:5000/
 
 Khushpreet Kaur  
 
-GitHub: [Your GitHub Link]  
-LinkedIn: [Your LinkedIn Link]
+GitHub: (https://github.com/KhushpreetKaur10)
