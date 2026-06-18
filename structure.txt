@@ -2,18 +2,24 @@ url-shortener/
 │
 ├── app.py
 ├── db.py
+├── redis_client.py
 ├── requirements.txt
-├── README.md
+├── .dockerignore
+├── docker-compose.yml
+├── nginx.conf
+├── Dockerfile
+├── test_redis.py
 │
 ├── templates/
 │   └── index.html
-│
+│   └── dashboard.html
+|
 ├── static/
+│   ├── qrcodes/
 │   ├── style.css
 │   └── script.js
 │
 ├── database/
-│   └── schema.sql
+│   └── init.sql
 │
-└── screenshots/
-    └── demo.png
+└── README.md
