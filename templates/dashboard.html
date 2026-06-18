@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Analytics Dashboard</title>
+
+    <style>
+        body{
+            font-family: Arial;
+            padding:30px;
+        }
+
+        table{
+            border-collapse: collapse;
+            width:100%;
+        }
+
+        th,td{
+            border:1px solid #ddd;
+            padding:10px;
+        }
+
+        th{
+            background:#f2f2f2;
+        }
+    </style>
+
+</head>
+
+<body>
+<h2>System Stats</h2>
+
+<p>Total URLs: {{ total_urls }}</p>
+
+<p>Total Clicks: {{ total_clicks }}</p>
+
+<p>Redis Cache Keys: {{ cache_keys }}</p>
+
+<h2>Top URLs</h2>
+
+<table>
+
+<tr>
+    <th>Short Code</th>
+    <th>Original URL</th>
+    <th>Clicks</th>
+</tr>
+
+{% for row in rows %}
+<tr>
+    <td>{{ row[0] }}</td>
+    <td>{{ row[1] }}</td>
+    <td>{{ row[2] }}</td>
+</tr>
+{% endfor %}
+
+</table>
+
+</body>
+</html>
