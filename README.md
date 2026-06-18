@@ -1,165 +1,184 @@
-# 🚀 URL Shortener Service (Scalable Backend System)
+# 🚀 Distributed URL Shortener System
 
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![Flask](https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
-![REST API](https://img.shields.io/badge/REST%20API-FF6F00?style=for-the-badge&logo=fastapi&logoColor=white)
-![Status](https://img.shields.io/badge/Project-Active-brightgreen?style=for-the-badge)
+![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![Nginx](https://img.shields.io/badge/Nginx-009639?style=for-the-badge&logo=nginx&logoColor=white)
 
 ---
 
 ## 📌 Overview
 
-A production-style URL Shortener API built using Flask and MySQL with caching, analytics, and expiry handling.  
-This project simulates real-world backend systems used in scalable link management platforms.
+A scalable URL Shortener system built using Flask, MySQL, and Redis that simulates real-world backend architecture.
+
+Features:
+- Fast URL redirection using Redis caching
+- Custom alias support
+- Rate limiting using Redis
+- Click analytics tracking
+- QR code generation
+- Docker-based multi-service setup
 
 ---
 
 ## 🛠️ Tech Stack
 
-Backend: Flask (Python)  
-Database: MySQL  
-Frontend: HTML, CSS, JavaScript (basic UI)  
-Caching: Python Dictionary (Redis-like simulation)  
-Concepts: REST API, DBMS, System Design, OOP  
+- Flask (Python)
+- MySQL
+- Redis
+- HTML, CSS, JavaScript
+- Docker, Docker Compose
+- Nginx (for load balancing design)
+- REST API, System Design concepts
 
 ---
 
-## 📂 Project Structure
+## 📂 Architecture
 
-```text
-url-shortener/
-│
-├── app.py
-├── db.py
-├── requirements.txt
-├── README.md
-│
-├── templates/
-│   └── index.html
-│
-├── static/
-│   ├── style.css
-│   └── script.js
-│
-├── database/
-│   └── url_shortener.sql
-│
-└── screenshots/
-    └── demo.png
-```
+Client → Flask API → Redis Cache → MySQL Database
+
+Includes:
+- Redis caching layer
+- MySQL persistent storage
+- Rate limiting via Redis
+- Analytics logging
+- QR code generator
+
+---
+
+## ⚙️ Features
+
+### 🔗 URL Shortening
+- Base62 short code generation
+- Custom alias support
+- Duplicate URL detection
+
+### ⚡ Redis Caching
+- Cache-aside strategy
+- Faster redirects
+- Reduced DB load
+
+### 🚦 Rate Limiting
+- Redis fixed-window algorithm
+- 10 requests per minute per IP
+
+### 📊 Analytics
+- Click tracking
+- Unique visitors
+- IP and user-agent logging
+
+### 🧾 QR Code Generation
+- Auto-generated QR for each short URL
+
+### 🐳 Docker Setup
+- Flask service
+- MySQL service
+- Redis service
+- Docker Compose orchestration
+
+### 🌐 Load Balancing Design
+- Nginx configured for horizontal scaling
+- Stateless backend design
 
 ---
 
 ## 🚀 API Endpoints
 
-### 1. Shorten URL
-
-POST /shorten
-
+### POST /shorten
 Request:
-```json
 {
   "url": "https://example.com",
-  "alias": "optional_custom_name"
+  "alias": "optional_code"
 }
-```
 
 Response:
-```json
 {
+  "short_url": "http://127.0.0.1:5000/abc123",
   "code": "abc123",
   "original_url": "https://example.com",
-  "short_url": "http://localhost:5000/abc123"
+  "qr_url": "/static/qrcodes/abc123.png"
 }
-```
 
 ---
 
-### 2. Redirect URL
-
-GET /<short_code>
-
-Redirects user to original URL  
-Updates click analytics  
+### GET /<short_code>
+- Redirects to original URL
+- Updates click analytics
+- Logs user activity
 
 ---
 
-### 3. Stats API
-
-GET /stats/<short_code>
-
-Response:
-```json
+### GET /stats/<short_code>
 {
   "short_code": "abc123",
   "long_url": "https://example.com",
   "clicks": 10,
-  "created_at": "2026-01-01",
-  "last_accessed": "2026-01-02",
-  "expiry_date": "2026-02-01"
+  "unique_visitors": 5,
+  "created_at": "...",
+  "last_accessed": "...",
+  "expiry_date": "..."
 }
-```
 
 ---
 
-## ⚙️ How It Works
-
-- User submits a long URL  
-- System checks if URL already exists  
-- If not, generates a unique short code  
-- Stores mapping in MySQL  
-- Caches result for faster access  
-- Redirects users using short URL  
-- Tracks analytics on each click  
+### GET /cache-stats
+Returns Redis cache usage statistics
 
 ---
 
-## 🧠 Key Engineering Highlights
-
-- Cache layer reduces database load  
-- Idempotent URL mapping prevents duplication  
-- Expiry system simulates real-world lifecycle  
-- Clean REST API design  
-- Separation of cache and database layers  
-- Efficient redirect handling  
+### GET /dashboard
+- Top 10 URLs
+- Total URLs created
+- Total clicks
+- Cache stats
 
 ---
 
-## 📈 Future Improvements
+## 🧠 System Design Concepts
 
-- Replace in-memory cache with Redis  
-- Add analytics dashboard (React frontend)  
-- Dockerize application  
-- Deploy on cloud (AWS / Render)  
-- Add authentication system  
-- Generate QR codes for short URLs  
-
----
-
-## ⭐ Why this project matters
-
-- Backend system design thinking  
-- REST API development skills  
-- Database design and management  
-- Caching and performance optimization  
-- Scalable architecture understanding  
-- Real-world analytics system design  
+- Cache-aside pattern using Redis
+- Stateless backend architecture
+- Separation of cache and DB
+- Rate limiting system
+- Analytics logging system
+- Containerized microservices
 
 ---
 
-## 🧪 Run Locally
+## 📈 Key Learnings
 
-pip install flask mysql-connector-python  
-python app.py  
+- Backend system design basics
+- Redis caching strategies
+- Database schema design
+- Rate limiting techniques
+- Docker orchestration
+- REST API design
 
-Open:  
-http://localhost:5000/
+---
+
+## 🐳 Run Locally
+
+docker-compose up --build
+
+Open:
+http://127.0.0.1:5000
+
+---
+
+## 🔮 Future Improvements
+
+- Async analytics (queue system)
+- Sliding window rate limiter
+- Kubernetes deployment
+- Prometheus monitoring
+- Cloud deployment (AWS/GCP)
+- Authentication system
 
 ---
 
 ## 👨‍💻 Author
 
 Khushpreet Kaur  
-
-GitHub: (https://github.com/KhushpreetKaur10)
+GitHub: https://github.com/KhushpreetKaur10
