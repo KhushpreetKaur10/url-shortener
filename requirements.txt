@@ -1,2 +1,5 @@
-flask
+Flask
+redis
 mysql-connector-python
+qrcode
+Pillow
