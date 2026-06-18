@@ -1,0 +1,31 @@
+services:
+
+  app:
+    build: .
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mysql
+      - redis
+    volumes:
+      - .:/app   # ✅ FIX: this must be inside service, not bottom
+
+  mysql:
+    image: mysql:8
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: url_shortener
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+
+volumes:
+  mysql_data:
