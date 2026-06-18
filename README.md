@@ -11,15 +11,11 @@
 
 ## 📌 Overview
 
-A scalable URL Shortener system built using Flask, MySQL, and Redis that simulates real-world backend architecture.
+A scalable URL Shortener system built using Flask, MySQL, and Redis that demonstrates real-world backend system design concepts.
 
-Features:
-- Fast URL redirection using Redis caching
-- Custom alias support
-- Rate limiting using Redis
-- Click analytics tracking
-- QR code generation
-- Docker-based multi-service setup
+It implements caching, rate limiting, analytics tracking, and containerized deployment using Docker.
+
+The system reduces database load and improves redirection performance using Redis caching.
 
 ---
 
@@ -30,21 +26,54 @@ Features:
 - Redis
 - HTML, CSS, JavaScript
 - Docker, Docker Compose
-- Nginx (for load balancing design)
-- REST API, System Design concepts
+- Nginx (configured for load balancing design)
+- REST API
 
 ---
 
-## 📂 Architecture
+## 📂 System Architecture
 
-Client → Flask API → Redis Cache → MySQL Database
+Client → Flask API  
+↓  
+Redis Cache (cache-aside strategy)  
+↓ (cache miss)  
+MySQL Database (source of truth)
 
-Includes:
-- Redis caching layer
-- MySQL persistent storage
-- Rate limiting via Redis
-- Analytics logging
-- QR code generator
+Key points:
+- Redis used for fast URL lookup
+- MySQL stores persistent data
+- Stateless Flask backend
+- Nginx prepared for horizontal scaling
+
+---
+
+## 📁 Project Structure
+
+url-shortener/  
+│  
+├── app.py  
+├── db.py  
+├── redis_client.py  
+├── requirements.txt  
+├── .dockerignore  
+├── docker-compose.yml  
+├── nginx.conf  
+├── Dockerfile  
+├── test_redis.py  
+│  
+├── templates/  
+│   ├── index.html  
+│   ├── dashboard.html  
+│  
+├── static/  
+│   ├── qrcodes/  
+│   ├── style.css  
+│   └── script.js  
+│  
+├── database/  
+│   └── init.sql  
+│  
+└── README.md  
 
 ---
 
@@ -54,23 +83,27 @@ Includes:
 - Base62 short code generation
 - Custom alias support
 - Duplicate URL detection
+- 30-day expiry support
 
 ### ⚡ Redis Caching
-- Cache-aside strategy
-- Faster redirects
-- Reduced DB load
+- Cache-aside pattern implementation
+- Faster redirects for frequently used URLs
+- Reduced database load
 
 ### 🚦 Rate Limiting
-- Redis fixed-window algorithm
+- Redis-based fixed-window algorithm
 - 10 requests per minute per IP
+- Prevents abuse and overload
 
 ### 📊 Analytics
-- Click tracking
-- Unique visitors
-- IP and user-agent logging
+- Total click tracking
+- Unique visitors (IP-based)
+- IP address logging
+- User-agent tracking
 
 ### 🧾 QR Code Generation
-- Auto-generated QR for each short URL
+- Auto-generated QR code for each short URL
+- Easy sharing and scanning
 
 ### 🐳 Docker Setup
 - Flask service
@@ -78,15 +111,16 @@ Includes:
 - Redis service
 - Docker Compose orchestration
 
-### 🌐 Load Balancing Design
+### 🌐 Load Balancing (Design Only)
 - Nginx configured for horizontal scaling
-- Stateless backend design
+- Stateless backend design prepared for scaling
 
 ---
 
 ## 🚀 API Endpoints
 
 ### POST /shorten
+
 Request:
 {
   "url": "https://example.com",
@@ -104,13 +138,15 @@ Response:
 ---
 
 ### GET /<short_code>
+
 - Redirects to original URL
 - Updates click analytics
-- Logs user activity
+- Logs request metadata
 
 ---
 
 ### GET /stats/<short_code>
+
 {
   "short_code": "abc123",
   "long_url": "https://example.com",
@@ -124,11 +160,14 @@ Response:
 ---
 
 ### GET /cache-stats
-Returns Redis cache usage statistics
+
+Returns Redis cache statistics.
 
 ---
 
 ### GET /dashboard
+
+Displays:
 - Top 10 URLs
 - Total URLs created
 - Total clicks
@@ -138,18 +177,18 @@ Returns Redis cache usage statistics
 
 ## 🧠 System Design Concepts
 
-- Cache-aside pattern using Redis
+- Cache-aside pattern (Redis)
 - Stateless backend architecture
-- Separation of cache and DB
-- Rate limiting system
-- Analytics logging system
-- Containerized microservices
+- Separation of cache and database
+- Rate limiting using Redis counters
+- Analytics tracking system
+- Containerized multi-service setup
 
 ---
 
 ## 📈 Key Learnings
 
-- Backend system design basics
+- Backend system design fundamentals
 - Redis caching strategies
 - Database schema design
 - Rate limiting techniques
@@ -160,6 +199,11 @@ Returns Redis cache usage statistics
 
 ## 🐳 Run Locally
 
+Clone repository:
+git clone https://github.com/KhushpreetKaur10/url-shortener.git
+cd url-shortener
+
+Start services:
 docker-compose up --build
 
 Open:
@@ -169,8 +213,8 @@ http://127.0.0.1:5000
 
 ## 🔮 Future Improvements
 
-- Async analytics (queue system)
-- Sliding window rate limiter
+- Async analytics with queue system (Celery/Kafka)
+- Sliding window rate limiting
 - Kubernetes deployment
 - Prometheus monitoring
 - Cloud deployment (AWS/GCP)
@@ -178,7 +222,7 @@ http://127.0.0.1:5000
 
 ---
 
-## 👨‍💻 Author
+## 👩‍💻 Author
 
 Khushpreet Kaur  
 GitHub: https://github.com/KhushpreetKaur10
