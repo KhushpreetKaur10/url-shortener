@@ -3,6 +3,7 @@
 
 <head>
     <title>Distributed URL Shortener</title>
+
     <link rel="stylesheet"
           href="{{ url_for('static', filename='style.css') }}">
 </head>
@@ -10,17 +11,23 @@
 <body>
 
 <div class="container">
+
     <h2>Distributed URL Shortener</h2>
+
     <input
         id="url"
         placeholder="Enter URL">
+
     <input
         id="alias"
         placeholder="Custom Alias (Optional)">
+
     <button onclick="shorten()">
         Shorten URL
     </button>
+
     <p id="result"></p>
+
 </div>
 
 <script src="{{ url_for('static', filename='script.js') }}"></script>
