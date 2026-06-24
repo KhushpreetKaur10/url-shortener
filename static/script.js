@@ -1,10 +1,7 @@
 async function shorten() {
-
-    const url = document.getElementById("url").value;
-    const alias = document.getElementById("alias").value;
-
+    const url = document.getElementById("url").value.trim();
+    const alias = document.getElementById("alias").value.trim();
     try {
-
         const response = await fetch("/shorten", {
             method: "POST",
             headers: {
@@ -17,31 +14,33 @@ async function shorten() {
         });
 
         const data = await response.json();
-
-        if (!response.ok) {
-
-            document.getElementById("result").innerText =
-                data.error || "Error";
-
-            return;
-        }
-
-        let output = "";
-
+        let html = "";
         if (data.message) {
-            output += data.message + "\n\n";
+            html += `<p>${data.message}</p>`;
         }
 
         if (data.short_url) {
-            output += "Short URL: " + data.short_url;
+            html += `
+                <p>
+                    <a href="${data.short_url}" target="_blank">
+                        ${data.short_url}
+                    </a>
+                </p>
+            `;
         }
 
-        document.getElementById("result").innerHTML = output + "<br><img src='" + data.qr_url + "' width='150'/>";
-    }
-
-    catch (error) {
-
-        document.getElementById("result").innerText =
-            "Server Error";
+        if (data.qr_url) {
+            html += `
+                <img
+                    src="${data.qr_url}"
+                    width="150"
+                    alt="QR Code"
+                />
+            `;
+        }
+        document.getElementById("result").innerHTML = html;
+    } catch (error) {
+        document.getElementById("result").innerHTML =
+            "<p>Server Error</p>";
     }
 }
