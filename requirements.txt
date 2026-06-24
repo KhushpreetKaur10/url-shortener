@@ -1,5 +1,6 @@
-Flask
-redis
-mysql-connector-python
-qrcode
-Pillow
+Flask==3.0.0
+redis==5.0.1
+mysql-connector-python==8.3.0
+qrcode==7.4.2
+Pillow==10.4.0
+gunicorn==22.0.0
