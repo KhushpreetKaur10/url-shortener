@@ -1,14 +1,36 @@
+version: "3.9"
+
 services:
 
-  app:
+  app1:
     build: .
     ports:
-      - "5000:5000"
+      - "5001:5000"
     depends_on:
       - mysql
       - redis
     volumes:
-      - .:/app   # ✅ FIX: this must be inside service, not bottom
+      - ./static:/app/static
+
+  app2:
+    build: .
+    ports:
+      - "5002:5000"
+    depends_on:
+      - mysql
+      - redis
+    volumes:
+      - ./static:/app/static
+
+  app3:
+    build: .
+    ports:
+      - "5003:5000"
+    depends_on:
+      - mysql
+      - redis
+    volumes:
+      - ./static:/app/static
 
   mysql:
     image: mysql:8
@@ -17,7 +39,7 @@ services:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: url_shortener
     ports:
-      - "3307:3306"
+      - "3310:3306"
     volumes:
       - mysql_data:/var/lib/mysql
       - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -26,6 +48,17 @@ services:
     image: redis:7
     ports:
       - "6379:6379"
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app1
+      - app2
+      - app3
 
 volumes:
   mysql_data:
