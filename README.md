@@ -1,4 +1,4 @@
-# 🚀 Distributed URL Shortener System
+# 🚀 FastLink: Distributed URL Shortening Platform
 
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![Flask](https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white)
@@ -9,220 +9,347 @@
 
 ---
 
-## 📌 Overview
+# 📌 Overview
 
-A scalable URL Shortener system built using Flask, MySQL, and Redis that demonstrates real-world backend system design concepts.
+FastLink is a scalable URL shortening platform built using Flask, MySQL, Redis, Docker, and Nginx.
 
-It implements caching, rate limiting, analytics tracking, and containerized deployment using Docker.
+The system supports URL shortening, custom aliases, QR code generation, URL expiration, analytics tracking, Redis caching, rate limiting, and load-balanced deployment across multiple stateless application instances.
 
-The system reduces database load and improves redirection performance using Redis caching.
+The project demonstrates backend engineering concepts including layered architecture, cache-aside caching, observability, containerization, and horizontal scalability.
 
 ---
 
-## 🛠️ Tech Stack
+# 🛠️ Tech Stack
 
-- Flask (Python)
+- Python
+- Flask
 - MySQL
 - Redis
-- HTML, CSS, JavaScript
-- Docker, Docker Compose
-- Nginx (configured for load balancing design)
-- REST API
+- HTML
+- CSS
+- JavaScript
+- Docker
+- Docker Compose
+- Nginx
+- Gunicorn
+- REST APIs
 
 ---
 
-## 📂 System Architecture
+# 🏗️ System Architecture
 
-Client → Flask API  
-↓  
-Redis Cache (cache-aside strategy)  
-↓ (cache miss)  
-MySQL Database (source of truth)
+```text
+                 ┌─────────────┐
+                 │   Client    │
+                 └──────┬──────┘
+                        │
+                        ▼
+                 ┌─────────────┐
+                 │    Nginx    │
+                 │Load Balancer│
+                 └──────┬──────┘
+                        │
+        ┌───────────────┼───────────────┐
+        ▼               ▼               ▼
+   ┌────────┐     ┌────────┐     ┌────────┐
+   │ App 1  │     │ App 2  │     │ App 3  │
+   │ Flask  │     │ Flask  │     │ Flask  │
+   └────┬───┘     └────┬───┘     └────┬───┘
+        │              │              │
+        └──────────────┼──────────────┘
+                       │
+        ┌──────────────┴──────────────┐
+        ▼                             ▼
+   ┌──────────┐                 ┌──────────┐
+   │  Redis   │                 │  MySQL   │
+   │  Cache   │                 │ Database │
+   └──────────┘                 └──────────┘
+```
 
-Key points:
-- Redis used for fast URL lookup
-- MySQL stores persistent data
-- Stateless Flask backend
-- Nginx prepared for horizontal scaling
+### Architectural Highlights
 
----
-
-## 📁 Project Structure
-
-url-shortener/  
-│  
-├── app.py  
-├── db.py  
-├── redis_client.py  
-├── requirements.txt  
-├── .dockerignore  
-├── docker-compose.yml  
-├── nginx.conf  
-├── Dockerfile  
-├── test_redis.py  
-│  
-├── templates/  
-│   ├── index.html  
-│   ├── dashboard.html  
-│  
-├── static/  
-│   ├── qrcodes/  
-│   ├── style.css  
-│   └── script.js  
-│  
-├── database/  
-│   └── init.sql  
-│  
-└── README.md  
+- Stateless Flask application instances
+- Nginx-based request load balancing
+- Redis Cache-Aside strategy
+- MySQL as source of truth
+- Layered backend architecture
+- Containerized deployment using Docker Compose
 
 ---
 
-## ⚙️ Features
+# 📁 Project Structure
 
-### 🔗 URL Shortening
-- Base62 short code generation
+```text
+url-shortener/
+│
+├── app.py
+├── db.py
+├── redis_client.py
+├── requirements.txt
+│
+├── routes/
+│   ├── url_routes.py
+│   └── stats_routes.py
+│
+├── services/
+│   ├── url_service.py
+│   ├── cache_service.py
+│   ├── analytics_service.py
+│   └── rate_limit_service.py
+│
+├── repositories/
+│   ├── url_repo.py
+│   └── analytics_repo.py
+│
+├── utils/
+│   ├── base62.py
+│   ├── validators.py
+│   ├── qr_generator.py
+│   └── url_normaliser.py
+│
+├── observability/
+│   ├── logger.py
+│   └── metrics.py
+│
+├── middleware/
+│   └── rate_limiter.py
+│
+├── templates/
+├── static/
+├── database/
+│
+├── docker-compose.yml
+├── nginx.conf
+├── Dockerfile
+└── README.md
+```
+
+---
+
+# ⚙️ Features
+
+## 🔗 URL Shortening
+
+- Base62 short-code generation
 - Custom alias support
 - Duplicate URL detection
-- 30-day expiry support
+- URL normalization
+- QR-code generation
+- Automatic 30-day URL expiration
 
-### ⚡ Redis Caching
-- Cache-aside pattern implementation
-- Faster redirects for frequently used URLs
-- Reduced database load
+## ⚡ Redis Caching
 
-### 🚦 Rate Limiting
-- Redis-based fixed-window algorithm
+- Cache-Aside caching pattern
+- Cache-first URL resolution
+- Database fallback on cache miss
+- 3600-second (1-hour) TTL cache retention
+
+## 🚦 Rate Limiting
+
+- Redis-backed fixed-window algorithm
+- Atomic counter operations
+- TTL-based request windows
 - 10 requests per minute per IP
-- Prevents abuse and overload
 
-### 📊 Analytics
-- Total click tracking
-- Unique visitors (IP-based)
-- IP address logging
-- User-agent tracking
+## 📊 Analytics
 
-### 🧾 QR Code Generation
-- Auto-generated QR code for each short URL
-- Easy sharing and scanning
+Tracks:
 
-### 🐳 Docker Setup
-- Flask service
-- MySQL service
+- Click count
+- Unique visitors
+- IP addresses
+- User-agent metadata
+- Last accessed timestamp
+
+## 📈 Observability
+
+Application metrics:
+
+- Cache hits
+- Cache misses
+- Redirect count
+- URLs created
+
+Logging:
+
+- Cache hit events
+- Cache miss events
+
+## 🗄️ Database Optimizations
+
+- Indexed short-code lookups
+- Unique URL constraint
+- Analytics event tracking
+- Click aggregation
+
+## 🐳 Containerized Deployment
+
+- 3 Flask application instances
+- 4 Gunicorn workers per instance
 - Redis service
+- MySQL service
+- Nginx load balancer
 - Docker Compose orchestration
 
-### 🌐 Load Balancing (Design Only)
-- Nginx configured for horizontal scaling
-- Stateless backend design prepared for scaling
-
 ---
 
-## 🚀 API Endpoints
+# 🚀 API Endpoints
 
-### POST /shorten
+## POST /shorten
 
-Request:
+Creates a shortened URL.
+
+### Request
+
+```json
 {
   "url": "https://example.com",
-  "alias": "optional_code"
+  "alias": "custom123"
 }
+```
 
-Response:
+### Response
+
+```json
 {
-  "short_url": "http://127.0.0.1:5000/abc123",
-  "code": "abc123",
-  "original_url": "https://example.com",
-  "qr_url": "/static/qrcodes/abc123.png"
+  "status": "success",
+  "short_code": "custom123",
+  "short_url": "http://localhost/custom123",
+  "qr_url": "/static/qrcodes/custom123.png"
 }
+```
 
 ---
 
-### GET /<short_code>
+## GET /<short_code>
 
-- Redirects to original URL
-- Updates click analytics
-- Logs request metadata
+Redirects to the original URL.
+
+Features:
+
+- Redis cache lookup
+- Database fallback
+- Analytics tracking
+- Redirect counting
 
 ---
 
-### GET /stats/<short_code>
+## GET /stats/<short_code>
 
+Returns analytics for a shortened URL.
+
+### Example Response
+
+```json
 {
-  "short_code": "abc123",
   "long_url": "https://example.com",
-  "clicks": 10,
-  "unique_visitors": 5,
+  "clicks": 25,
   "created_at": "...",
   "last_accessed": "...",
-  "expiry_date": "..."
+  "expiry_date": "...",
+  "unique_visitors": 12
 }
+```
 
 ---
 
-### GET /cache-stats
+## GET /metrics
+
+Returns application metrics.
+
+### Example Response
+
+```json
+{
+  "cache_hit": 100,
+  "cache_miss": 20,
+  "redirects": 80,
+  "urls_created": 40
+}
+```
+
+---
+
+## GET /cache-stats
 
 Returns Redis cache statistics.
 
----
+### Example Response
 
-### GET /dashboard
-
-Displays:
-- Top 10 URLs
-- Total URLs created
-- Total clicks
-- Cache stats
+```json
+{
+  "keys": 150
+}
+```
 
 ---
 
-## 🧠 System Design Concepts
+# 🧠 Backend Design Concepts
 
-- Cache-aside pattern (Redis)
-- Stateless backend architecture
-- Separation of cache and database
-- Rate limiting using Redis counters
-- Analytics tracking system
-- Containerized multi-service setup
+- Layered Architecture (Routes → Services → Repositories → Database)
+- Cache-Aside Pattern
+- Stateless Backend Design
+- Redis-Based Rate Limiting
+- Request Analytics Tracking
+- Horizontal Scaling
+- Reverse Proxy Load Balancing
+- Containerized Deployment
+- URL Normalization
+- Observability and Metrics Collection
 
 ---
 
-## 📈 Key Learnings
+# 📚 Key Learnings
 
-- Backend system design fundamentals
+- REST API development
+- Backend architecture design
 - Redis caching strategies
-- Database schema design
+- Database indexing
 - Rate limiting techniques
-- Docker orchestration
-- REST API design
+- Analytics collection
+- Docker-based deployments
+- Nginx load balancing
+- Observability fundamentals
 
 ---
 
-## 🐳 Run Locally
+# 🚀 Run Locally
 
-Clone repository:
+### Clone Repository
+
+```bash
 git clone https://github.com/KhushpreetKaur10/url-shortener.git
 cd url-shortener
+```
 
-Start services:
+### Start Services
+
+```bash
 docker-compose up --build
+```
 
-Open:
-http://127.0.0.1:5000
+### Access Application
+
+```text
+http://localhost
+```
 
 ---
 
-## 🔮 Future Improvements
+# 🔮 Future Improvements
 
-- Async analytics with queue system (Celery/Kafka)
-- Sliding window rate limiting
-- Kubernetes deployment
+- Sliding-window rate limiting
+- Background analytics processing
+- Distributed caching
+- Cloud deployment (AWS / Azure / GCP)
 - Prometheus monitoring
-- Cloud deployment (AWS/GCP)
-- Authentication system
+- Authentication and authorization
+- Kubernetes deployment
 
 ---
 
-## 👩‍💻 Author
+# 👩‍💻 Author
 
-Khushpreet Kaur  
+**Khushpreet Kaur**
+
 GitHub: https://github.com/KhushpreetKaur10
