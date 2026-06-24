@@ -5,5 +5,5 @@ def get_db():
         host="mysql",
         user="root",
         password="root",
-        database="url_shortener"
+        database="url_DB"
     )
