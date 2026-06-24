@@ -1,3 +1,7 @@
+CREATE DATABASE IF NOT EXISTS url_DB;
+USE url_DB;
+
+
 CREATE TABLE IF NOT EXISTS urls (
     id INT AUTO_INCREMENT PRIMARY KEY,
     long_url TEXT NOT NULL,
@@ -18,3 +22,6 @@ CREATE TABLE IF NOT EXISTS analytics (
 
 CREATE INDEX idx_short_code
 ON urls(short_code);
+
+ALTER TABLE urls
+ADD UNIQUE KEY unique_long_url (long_url(255));
